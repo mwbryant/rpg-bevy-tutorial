@@ -39,12 +39,14 @@ fn main() {
 fn spawn_camera(mut commands: Commands) {
     let mut camera = OrthographicCameraBundle::new_2d();
 
+    //Set the camera to have normalized coordinates of y values -1 to 1
     camera.orthographic_projection.top = 1.0;
     camera.orthographic_projection.bottom = -1.0;
 
     camera.orthographic_projection.right = 1.0 * RESOLUTION;
     camera.orthographic_projection.left = -1.0 * RESOLUTION;
 
+    //Force the camera to use our settings
     camera.orthographic_projection.scaling_mode = ScalingMode::None;
 
     commands.spawn_bundle(camera);
