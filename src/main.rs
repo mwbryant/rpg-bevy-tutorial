@@ -6,18 +6,29 @@ pub const RESOLUTION: f32 = 16.0 / 9.0;
 pub const TILE_SIZE: f32 = 0.1;
 
 mod ascii;
+mod combat;
 mod debug;
+mod fadeout;
 mod player;
 mod tilemap;
 
 use ascii::AsciiPlugin;
+use combat::CombatPlugin;
 use debug::DebugPlugin;
+use fadeout::FadeoutPlugin;
 use player::PlayerPlugin;
 use tilemap::TileMapPlugin;
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
+pub enum GameState {
+    Overworld,
+    Combat,
+}
 
 fn main() {
     let height = 900.0;
     App::new()
+        .add_state(GameState::Overworld)
         .insert_resource(ClearColor(CLEAR))
         .insert_resource(WindowDescriptor {
             width: height * RESOLUTION,
@@ -30,6 +41,8 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(spawn_camera)
         .add_plugin(PlayerPlugin)
+        .add_plugin(CombatPlugin)
+        .add_plugin(FadeoutPlugin)
         .add_plugin(AsciiPlugin)
         .add_plugin(DebugPlugin)
         .add_plugin(TileMapPlugin)
