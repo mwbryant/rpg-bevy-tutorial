@@ -1,4 +1,5 @@
 #![allow(clippy::redundant_field_names)]
+#![allow(clippy::too_many_arguments)]
 use bevy::{prelude::*, render::camera::ScalingMode};
 
 pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
