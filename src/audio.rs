@@ -23,7 +23,9 @@ impl Plugin for GameAudioPlugin {
         app.add_plugin(AudioPlugin)
             .add_startup_system_to_stage(StartupStage::PreStartup, load_audio)
             .add_system_set(SystemSet::on_enter(GameState::Combat).with_system(start_combat_music))
-            .add_system_set(SystemSet::on_enter(GameState::Overworld).with_system(resume_bgm_music))
+            .add_system_set(
+                SystemSet::on_resume(GameState::Overworld).with_system(resume_bgm_music),
+            )
             .add_system_set(SystemSet::on_enter(CombatState::Reward).with_system(play_reward_sfx))
             .add_system(play_hit_sfx)
             .add_system(volume_control)

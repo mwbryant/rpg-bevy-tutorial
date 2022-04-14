@@ -12,7 +12,9 @@ mod combat;
 mod debug;
 mod fadeout;
 mod graphics;
+mod npc;
 mod player;
+mod start_menu;
 mod tilemap;
 
 use ascii::AsciiPlugin;
@@ -21,11 +23,14 @@ use combat::CombatPlugin;
 use debug::DebugPlugin;
 use fadeout::FadeoutPlugin;
 use graphics::GraphicsPlugin;
+use npc::NpcPlugin;
 use player::PlayerPlugin;
+use start_menu::MainMenuPlugin;
 use tilemap::TileMapPlugin;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum GameState {
+    StartMenu,
     Overworld,
     Combat,
 }
@@ -33,7 +38,7 @@ pub enum GameState {
 fn main() {
     let height = 900.0;
     App::new()
-        .add_state(GameState::Overworld)
+        .add_state(GameState::StartMenu)
         .insert_resource(ClearColor(CLEAR))
         .insert_resource(WindowDescriptor {
             width: height * RESOLUTION,
@@ -51,10 +56,15 @@ fn main() {
         .add_plugin(CombatPlugin)
         .add_plugin(FadeoutPlugin)
         .add_plugin(AsciiPlugin)
+        .add_plugin(NpcPlugin)
         .add_plugin(DebugPlugin)
+        .add_plugin(MainMenuPlugin)
         .add_plugin(TileMapPlugin)
         .run();
 }
+
+#[derive(Component)]
+pub struct MainCamera;
 
 fn spawn_camera(mut commands: Commands) {
     let mut camera = OrthographicCameraBundle::new_2d();
@@ -69,5 +79,5 @@ fn spawn_camera(mut commands: Commands) {
     //Force the camera to use our settings
     camera.orthographic_projection.scaling_mode = ScalingMode::None;
 
-    commands.spawn_bundle(camera);
+    commands.spawn_bundle(camera).insert(MainCamera);
 }
