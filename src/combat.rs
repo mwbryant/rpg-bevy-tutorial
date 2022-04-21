@@ -1,12 +1,12 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, render::camera::Camera2d};
 use bevy_inspector_egui::Inspectable;
 
 use crate::{
     ascii::{spawn_ascii_text, spawn_nine_slice, AsciiSheet, NineSlice, NineSliceIndices},
     fadeout::create_fadeout,
-    graphics::{spawn_bat_sprite, CharacterSheet},
+    graphics::{spawn_enemy_sprite, CharacterSheet},
     player::Player,
-    GameState, MainCamera, RESOLUTION, TILE_SIZE,
+    GameState, RESOLUTION, TILE_SIZE,
 };
 
 #[derive(Component, Inspectable)]
@@ -18,8 +18,16 @@ pub struct CombatStats {
     pub defense: isize,
 }
 
+#[derive(Clone, Copy)]
+pub enum EnemyType {
+    Bat,
+    Ghost,
+}
+
 #[derive(Component)]
-pub struct Enemy;
+pub struct Enemy {
+    enemy_type: EnemyType,
+}
 
 pub struct FightEvent {
     target: Entity,
@@ -117,12 +125,16 @@ fn handle_accepting_reward(
 fn give_reward(
     mut commands: Commands,
     ascii: Res<AsciiSheet>,
-    mut player_query: Query<&mut Player>,
+    mut player_query: Query<(&mut Player, &mut CombatStats)>,
+    enemy_query: Query<&Enemy>,
     mut keyboard: ResMut<Input<KeyCode>>,
 ) {
     keyboard.clear();
     //TODO come based on enemies killed
-    let exp_reward = 10;
+    let exp_reward = match enemy_query.single().enemy_type {
+        EnemyType::Bat => 10,
+        EnemyType::Ghost => 30,
+    };
     let reward_text = format!("Earned: {} exp", exp_reward);
     let text = spawn_ascii_text(
         &mut commands,
@@ -131,7 +143,21 @@ fn give_reward(
         Vec3::new(-((reward_text.len() / 2) as f32 * TILE_SIZE), 0.0, 0.0),
     );
     commands.entity(text).insert(CombatText);
-    player_query.single_mut().exp += exp_reward;
+    let (mut player, mut stats) = player_query.single_mut();
+    if player.give_exp(exp_reward, &mut stats) {
+        let level_text = "Level up!";
+        let text = spawn_ascii_text(
+            &mut commands,
+            &ascii,
+            level_text,
+            Vec3::new(
+                -((level_text.len() / 2) as f32 * TILE_SIZE),
+                -1.5 * TILE_SIZE,
+                0.0,
+            ),
+        );
+        commands.entity(text).insert(CombatText);
+    }
 }
 
 fn despawn_all_combat_text(mut commands: Commands, text_query: Query<Entity, With<CombatText>>) {
@@ -412,7 +438,7 @@ fn combat_input(
 }
 
 fn combat_camera(
-    mut camera_query: Query<&mut Transform, With<MainCamera>>,
+    mut camera_query: Query<&mut Transform, With<Camera2d>>,
     attack_fx: Res<AttackEffects>,
 ) {
     let mut camera_transform = camera_query.single_mut();
@@ -421,25 +447,42 @@ fn combat_camera(
 }
 
 fn spawn_enemy(mut commands: Commands, ascii: Res<AsciiSheet>, characters: Res<CharacterSheet>) {
-    let enemy_health = 3;
+    let enemy_type = match rand::random::<f32>() {
+        x if x < 0.5 => EnemyType::Bat,
+        _ => EnemyType::Ghost,
+    };
+    let stats = match enemy_type {
+        EnemyType::Bat => CombatStats {
+            health: 3,
+            max_health: 3,
+            attack: 2,
+            defense: 1,
+        },
+        EnemyType::Ghost => CombatStats {
+            health: 5,
+            max_health: 5,
+            attack: 3,
+            defense: 2,
+        },
+    };
     let health_text = spawn_ascii_text(
         &mut commands,
         &ascii,
-        &format!("Health: {}", enemy_health as usize),
+        &format!("Health: {}", stats.health as usize),
         //relative to enemy pos
         Vec3::new(-4.5 * TILE_SIZE, 0.5, 100.0),
     );
     commands.entity(health_text).insert(CombatText);
-    let sprite = spawn_bat_sprite(&mut commands, &characters, Vec3::new(0.0, 0.3, 100.0));
+    let sprite = spawn_enemy_sprite(
+        &mut commands,
+        &characters,
+        Vec3::new(0.0, 0.3, 100.0),
+        enemy_type,
+    );
     commands
         .entity(sprite)
-        .insert(Enemy)
-        .insert(CombatStats {
-            health: enemy_health,
-            max_health: enemy_health,
-            attack: 2,
-            defense: 1,
-        })
+        .insert(Enemy { enemy_type })
+        .insert(stats)
         .insert(Name::new("Bat"))
         .add_child(health_text);
 }

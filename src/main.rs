@@ -1,6 +1,6 @@
 #![allow(clippy::redundant_field_names)]
 #![allow(clippy::too_many_arguments)]
-use bevy::{prelude::*, render::camera::ScalingMode};
+use bevy::{prelude::*, render::camera::ScalingMode, window::PresentMode};
 
 pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
 pub const RESOLUTION: f32 = 16.0 / 9.0;
@@ -44,7 +44,7 @@ fn main() {
             width: height * RESOLUTION,
             height: height,
             title: "Bevy Tutorial".to_string(),
-            vsync: true,
+            present_mode: PresentMode::Fifo,
             resizable: false,
             ..Default::default()
         })
@@ -63,9 +63,6 @@ fn main() {
         .run();
 }
 
-#[derive(Component)]
-pub struct MainCamera;
-
 fn spawn_camera(mut commands: Commands) {
     let mut camera = OrthographicCameraBundle::new_2d();
 
@@ -79,5 +76,5 @@ fn spawn_camera(mut commands: Commands) {
     //Force the camera to use our settings
     camera.orthographic_projection.scaling_mode = ScalingMode::None;
 
-    commands.spawn_bundle(camera).insert(MainCamera);
+    commands.spawn_bundle(camera);
 }
