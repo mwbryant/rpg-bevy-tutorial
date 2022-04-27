@@ -30,3 +30,6 @@ Background Music:
 https://retroindiejosh.itch.io/free-music-pack-5
 Contains music ©2020 Joshua McLean (https://joshua-mclean.itch.io)
 Licensed under Creative Commons Attribution 4.0 International
+
+Ascii Sheet from: https://dwarffortresswiki.org/Tileset_repository#9.C3.979
+Author: Dorten, from 2009-02-13
