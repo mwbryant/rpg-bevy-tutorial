@@ -100,21 +100,11 @@ fn load_audio(
     let reward_handle = assets.load("reward.wav");
 
 
-    /*
-    let bgm_channel = AudioChannel::new("bgm".to_string());
-    let combat_channel = AudioChannel::new("combat".to_string());
-    let sfx_channel = AudioChannel::new("sfx".to_string());
-    */
-    let volume = 0.01;
+    let volume = 0.5;
 
     bg_audio.set_volume(volume);
     fx_audio.set_volume(volume);
     cb_audio.set_volume(volume);
-    /*
-    audio.set_volume_in_channel(volume, &bgm_channel);
-    audio.set_volume_in_channel(volume, &combat_channel);
-    audio.set_volume_in_channel(volume, &sfx_channel);
-    */
 
     commands.insert_resource(AudioState {
         bgm_handle: bgm_handle,

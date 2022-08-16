@@ -64,7 +64,7 @@ fn spawn_textbox(
     let text = spawn_ascii_text(commands, ascii, text, Vec3::new(x_offset, 0.0, 0.0));
 
     commands
-        .spawn()
+        .spawn_bundle(VisibilityBundle::default())
         .insert(Transform {
             translation: translation.extend(900.0),
             ..Default::default()
