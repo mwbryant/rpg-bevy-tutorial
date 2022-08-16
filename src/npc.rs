@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::camera::Camera2d};
+use bevy::prelude::*;
 
 use crate::{
     ascii::{spawn_ascii_sprite, spawn_ascii_text, spawn_nine_slice, AsciiSheet, NineSliceIndices},

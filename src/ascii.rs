@@ -86,7 +86,7 @@ pub fn spawn_ascii_text(
         ));
     }
     commands
-        .spawn()
+        .spawn_bundle(VisibilityBundle::default())
         .insert(Name::new(format!("Text - {}", to_print)))
         .insert(Transform {
             translation: left_center,
@@ -192,7 +192,7 @@ pub fn spawn_nine_slice(
     ));
 
     commands
-        .spawn()
+        .spawn_bundle(VisibilityBundle::default())
         .insert(NineSlice)
         .insert(Name::new("NineSpriteBox"))
         //Needs transforms for parent heirarchy system to work
@@ -209,7 +209,7 @@ fn load_ascii(
 ) {
     let image = assets.load("Ascii.png");
     let atlas =
-        TextureAtlas::from_grid_with_padding(image, Vec2::splat(9.0), 16, 16, Vec2::splat(2.0));
+        TextureAtlas::from_grid_with_padding(image, Vec2::splat(9.0), 16, 16, Vec2::splat(2.0), Vec2::ZERO);
 
     let atlas_handle = texture_atlases.add(atlas);
 

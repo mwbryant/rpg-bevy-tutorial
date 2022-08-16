@@ -10,7 +10,7 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.7", features = [
+bevy = { version = "0.8", features = [
     "dynamic",
     "bevy_gilrs",
     "bevy_winit",
@@ -20,6 +20,6 @@ bevy = { version = "0.7", features = [
     "vorbis",
     "x11",
     "filesystem_watcher" ] }
-bevy_kira_audio = { version = "0.9", features = ["ogg", "wav"] }
-bevy-inspector-egui = "0.10"
+bevy_kira_audio = { version = "0.12", features = ["ogg", "wav"] }
+bevy-inspector-egui = "0.12"
 rand = "*"
