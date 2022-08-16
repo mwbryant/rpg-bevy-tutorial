@@ -87,7 +87,7 @@ impl GraphicsPlugin {
     ) {
         let image = assets.load("characters.png");
         let atlas =
-            TextureAtlas::from_grid_with_padding(image, Vec2::splat(16.0), 12, 8, Vec2::splat(2.0));
+            TextureAtlas::from_grid_with_padding(image, Vec2::splat(16.0), 12, 8, Vec2::splat(2.0), Vec2::ZERO);
         let atlas_handle = texture_atlases.add(atlas);
 
         let columns = 12;

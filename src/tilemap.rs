@@ -97,7 +97,7 @@ fn create_simple_map(mut commands: Commands, ascii: Res<AsciiSheet>) {
     }
 
     commands
-        .spawn()
+        .spawn_bundle(VisibilityBundle::default())
         .insert(Map)
         .insert(Name::new("Map"))
         .insert(Transform::default())

@@ -63,7 +63,7 @@ fn setup_menu(mut commands: Commands, assets: Res<AssetServer>) {
         button_pressed: assets.load("button_pressed.png"),
     };
 
-    commands.spawn_bundle(UiCameraBundle::default());
+    //commands.spawn_bundle(UiCameraBundle::default());
     commands
         .spawn_bundle(ButtonBundle {
             style: Style {
@@ -71,7 +71,7 @@ fn setup_menu(mut commands: Commands, assets: Res<AssetServer>) {
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 size: Size::new(Val::Percent(20.0), Val::Percent(10.0)),
-                margin: Rect::all(Val::Auto),
+                margin: UiRect::all(Val::Auto),
                 ..Default::default()
             },
             color: Color::NONE.into(),
@@ -93,14 +93,14 @@ fn setup_menu(mut commands: Commands, assets: Res<AssetServer>) {
                 .insert(FocusPolicy::Pass)
                 .with_children(|parent| {
                     parent.spawn_bundle(TextBundle {
-                        text: Text::with_section(
+                        text: Text::from_section(
                             "Start Game",
                             TextStyle {
                                 font: ui_assets.font.clone(),
                                 font_size: 40.0,
                                 color: Color::rgb(0.9, 0.9, 0.9),
                             },
-                            Default::default(),
+                            //Default::default(),
                         ),
                         focus_policy: FocusPolicy::Pass,
                         ..Default::default()

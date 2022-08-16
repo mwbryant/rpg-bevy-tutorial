@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::camera::Camera2d};
+use bevy::prelude::*;
 use bevy_inspector_egui::Inspectable;
 
 use crate::{
@@ -288,9 +288,9 @@ fn spawn_combat_button(
     let fight_text = spawn_ascii_text(commands, ascii, text, Vec3::new(x_offset, 0.0, 0.0));
 
     commands
-        .spawn()
+        .spawn_bundle(VisibilityBundle::default())
         .insert(Transform {
-            translation: translation,
+            translation,
             ..Default::default()
         })
         .insert(GlobalTransform::default())
