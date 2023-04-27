@@ -9,7 +9,7 @@ fn main() {
         .insert_resource(ClearColor(CLEAR))
         .insert_resource(WindowDescriptor {
             width: height * RESOLUTION,
-            height: height,
+            height,
             title: "Bevy Tutorial".to_string(),
             vsync: true,
             resizable: false,
@@ -29,7 +29,7 @@ fn spawn_player(mut commands: Commands, ascii: Res<AsciiSheet>) {
 
     let player = commands
         .spawn_bundle(SpriteSheetBundle {
-            sprite: sprite,
+            sprite,
             texture_atlas: ascii.0.clone(),
             transform: Transform {
                 translation: Vec3::new(0.0, 0.0, 900.0),
