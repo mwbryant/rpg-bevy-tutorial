@@ -1,5 +1,5 @@
-use bevy::window::{PresentMode, WindowResolution};
-use bevy::{prelude::*, render::camera::ScalingMode};
+use bevy::window::PresentMode;
+use bevy::prelude::*;
 
 pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
 pub const RESOLUTION: f32 = 16.0 / 9.0;
@@ -72,9 +72,9 @@ fn spawn_player(mut commands: Commands, ascii: Res<AsciiSheet>) {
 }
 
 fn spawn_camera(mut commands: Commands) {
-    let mut camera = Camera2dBundle {
+    let camera = Camera2dBundle {
         projection: OrthographicProjection {
-            scale: 0.002,
+            scale: 1.0/500.0,
             ..Default::default()
         },
         ..Default::default()
@@ -93,26 +93,6 @@ fn load_ascii(
 ) {
     let image = assets.load("Ascii.png");
     let atlas = TextureAtlas::from_grid(
-        image,
-        Vec2::splat(9.0),
-        16,
-        16,
-        Some(Vec2::splat(2.0)),
-        None,
-    );
-
-    let atlas_handle = texture_atlases.add(atlas);
-
-    commands.insert_resource(AsciiSheet(atlas_handle));
-}
-
-fn load_ascii2(
-    mut commands: Commands,
-    assets: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-) {
-    let image = assets.load("Ascii.png");
-    let mut atlas = TextureAtlas::from_grid(
         image,
         Vec2::splat(9.0),
         16,
