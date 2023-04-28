@@ -1,4 +1,6 @@
-use bevy::{prelude::*, render::camera::ScalingMode};
+use bevy::window::PresentMode;
+use bevy::prelude::*;
+use bevy::render::camera::ScalingMode;
 
 pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
 pub const RESOLUTION: f32 = 16.0 / 9.0;
@@ -7,18 +9,28 @@ fn main() {
     let height = 900.0;
     App::new()
         .insert_resource(ClearColor(CLEAR))
-        .insert_resource(WindowDescriptor {
-            width: height * RESOLUTION,
-            height: height,
-            title: "Bevy Tutorial".to_string(),
-            vsync: true,
-            resizable: false,
-            ..Default::default()
-        })
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        resolution: (height * RESOLUTION, height).into(),
+                        title: "Bevy Tutorial".to_string(),
+                        present_mode: PresentMode::AutoVsync,
+                        resizable: false,
+                        ..Default::default()
+                    }),
+                    ..default()
+                })
+                .set(
+                    // This sets image filtering to nearest
+                    // This is done to prevent textures with low resolution (e.g. pixel art) from being blurred
+                    // by linear filtering.
+                    ImagePlugin::default_nearest(),
+                ),
+        )
         .add_startup_system(spawn_camera)
         .add_startup_system(spawn_player)
-        .add_startup_system_to_stage(StartupStage::PreStartup, load_ascii)
-        .add_plugins(DefaultPlugins)
+        .add_startup_system(load_ascii.in_base_set(StartupSet::PreStartup))
         .run();
 }
 
@@ -28,8 +40,8 @@ fn spawn_player(mut commands: Commands, ascii: Res<AsciiSheet>) {
     sprite.custom_size = Some(Vec2::splat(1.0));
 
     let player = commands
-        .spawn_bundle(SpriteSheetBundle {
-            sprite: sprite,
+        .spawn(SpriteSheetBundle {
+            sprite,
             texture_atlas: ascii.0.clone(),
             transform: Transform {
                 translation: Vec3::new(0.0, 0.0, 900.0),
@@ -45,7 +57,7 @@ fn spawn_player(mut commands: Commands, ascii: Res<AsciiSheet>) {
     background_sprite.custom_size = Some(Vec2::splat(1.0));
 
     let background = commands
-        .spawn_bundle(SpriteSheetBundle {
+        .spawn(SpriteSheetBundle {
             sprite: background_sprite,
             texture_atlas: ascii.0.clone(),
             transform: Transform {
@@ -61,19 +73,18 @@ fn spawn_player(mut commands: Commands, ascii: Res<AsciiSheet>) {
 }
 
 fn spawn_camera(mut commands: Commands) {
-    let mut camera = OrthographicCameraBundle::new_2d();
+    let camera = Camera2dBundle {
+        projection: OrthographicProjection {
+            scaling_mode: ScalingMode::WindowSize(500.0),
+            ..Default::default()
+        },
+        ..Default::default()
+    };
 
-    camera.orthographic_projection.top = 1.0;
-    camera.orthographic_projection.bottom = -1.0;
-
-    camera.orthographic_projection.right = 1.0 * RESOLUTION;
-    camera.orthographic_projection.left = -1.0 * RESOLUTION;
-
-    camera.orthographic_projection.scaling_mode = ScalingMode::None;
-
-    commands.spawn_bundle(camera);
+    commands.spawn(camera);
 }
 
+#[derive(Resource)]
 struct AsciiSheet(Handle<TextureAtlas>);
 
 fn load_ascii(
@@ -82,8 +93,14 @@ fn load_ascii(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let image = assets.load("Ascii.png");
-    let atlas =
-        TextureAtlas::from_grid_with_padding(image, Vec2::splat(9.0), 16, 16, Vec2::splat(2.0));
+    let atlas = TextureAtlas::from_grid(
+        image,
+        Vec2::splat(9.0),
+        16,
+        16,
+        Some(Vec2::splat(2.0)),
+        None,
+    );
 
     let atlas_handle = texture_atlases.add(atlas);
 
